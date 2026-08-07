@@ -4,7 +4,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { listingSchema } = require("../schema.js");
 const ExpressError = require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
-
+const { isLoggedIn } = require("../middleware.js");
 
 const validListing = (req, res, next) => {
     let { error } = listingSchema.validate(req.body);
@@ -23,7 +23,7 @@ router.get("/",  wrapAsync (async (req, res) => {
 }));
 
 //New Route
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
     res.render("listings/new.ejs");
 });
 
@@ -39,7 +39,7 @@ router.get("/:id",  wrapAsync (async(req, res) =>{
 }));
 
 // Create route
-router.post("/", validListing, wrapAsync (async (req, res, next) => {
+router.post("/", isLoggedIn, validListing, wrapAsync (async (req, res, next) => {
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     req.flash("success", "New Listing Created");
@@ -48,7 +48,7 @@ router.post("/", validListing, wrapAsync (async (req, res, next) => {
 }));
 
 // Edit route
-router.get("/:id/edit", wrapAsync ( async (req, res, next) => {
+router.get("/:id/edit", isLoggedIn, wrapAsync ( async (req, res, next) => {
     let {id} = req.params;
     const listing = await Listing.findById(id);
     if(!listing) {
@@ -59,7 +59,7 @@ router.get("/:id/edit", wrapAsync ( async (req, res, next) => {
 }));
 
 //Update route
-router.put("/:id", validListing, wrapAsync ( async (req, res) => {
+router.put("/:id", isLoggedIn, validListing, wrapAsync ( async (req, res) => {
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id, {...req.body.listing});
     req.flash("success", "Listing Updated");
@@ -68,7 +68,7 @@ router.put("/:id", validListing, wrapAsync ( async (req, res) => {
 }));
 
 // Delete Route
-router.delete("/:id", wrapAsync ( async (req, res) => {
+router.delete("/:id", isLoggedIn, wrapAsync ( async (req, res) => {
     let {id} = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
     req.flash("success", "Listing deleted!");
