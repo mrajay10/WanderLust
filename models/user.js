@@ -12,4 +12,4 @@ const userSchema = new Schema({
 
 // Password and username will create automatically by passportLocalMongoose(plugin)...
 userSchema.plugin(passportLocalMongoose.default);
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('user', userSchema);
