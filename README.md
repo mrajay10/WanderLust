@@ -1,100 +1,418 @@
-# WanderLust 🏡
+WanderLust 🏡
 
-An Airbnb-inspired listing platform built with the MERN-adjacent stack (Express + MongoDB + EJS). Users can browse, create, edit, and delete property listings, and leave reviews on them.
+An Airbnb-inspired full-stack property listing platform built with Node.js, Express.js, MongoDB, Mongoose, and EJS.
 
-## Features
+WanderLust allows users to browse property listings, create and manage their own listings, upload listing images, authenticate with a local account, and add reviews to listings.
 
-- **Listings CRUD** — create, view, update, and delete property listings
-- **Reviews** — add and delete reviews tied to a specific listing
-- **Server-side validation** — Joi-based schema validation for listings and reviews
-- **Custom error handling** — centralized error middleware with a dedicated error page
-- **Method override** — supports PUT/DELETE via HTML forms
-- **Templating** — EJS with `ejs-mate` for layout support
+✨ Features
 
-## Tech Stack
+🏠 Listings CRUD — create, view, edit, and delete property listings
 
-| Layer      | Technology            |
-|------------|------------------------|
-| Runtime    | Node.js                |
-| Framework  | Express.js             |
-| Database   | MongoDB + Mongoose     |
-| Templating | EJS + ejs-mate         |
-| Validation | Joi                    |
-| Utilities  | method-override        |
+⭐ Reviews — add and delete reviews for listings
 
-## Project Structure
+🔐 User Authentication — signup/login/logout using Passport and Passport Local Mongoose
 
-```
+👤 Authorization — only authenticated users can create listings; listing owners can manage their listings
+
+🛡️ Review Authorization — only review authors can delete their reviews
+
+✅ Server-side Validation — Joi validation for listings and reviews
+
+☁️ Cloudinary Image Uploads — listing images are stored using Cloudinary and Multer
+
+🗺️ Mapbox Integration — supports map/location functionality for listings
+
+💬 Flash Messages — success and error feedback through connect-flash
+
+💾 MongoDB Sessions — sessions are stored using connect-mongo
+
+🧩 EJS + EJS-Mate — server-side rendering with reusable layouts
+
+🔄 Method Override — supports PUT/PATCH/DELETE-style form requests
+
+⚠️ Centralized Error Handling — custom ExpressError middleware and error page
+
+🚫 404 Handling — undefined routes are handled by a custom 404 error
+
+🛠️ Tech Stack
+
+Category
+
+Technology
+
+Runtime
+
+Node.js 24.17.0
+
+Backend
+
+Express.js 5
+
+Database
+
+MongoDB + Mongoose
+
+Templating
+
+EJS + EJS-Mate
+
+Authentication
+
+Passport.js + Passport Local Mongoose
+
+Validation
+
+Joi
+
+Sessions
+
+Express Session + Connect Mongo
+
+Image Upload
+
+Multer + Cloudinary
+
+Maps
+
+Mapbox
+
+Flash Messages
+
+Connect Flash
+
+HTTP Method Override
+
+Method Override
+
+The project's package configuration specifies Node.js 24.17.0 and the main dependencies listed above.
+
+📁 Project Structure
+
 WanderLust/
-├── app.js                  # Main server entry point
-├── schema.js                # Joi validation schemas (listingSchema, reviewSchema)
+├── app.js
+├── package.json
+├── package-lock.json
+├── schema.js
+├── middleware.js
+├── cloudConfig.js
+│
 ├── models/
-│   ├── listing.js           # Listing Mongoose model
-│   └── review.js            # Review Mongoose model
+│   ├── listing.js
+│   ├── review.js
+│   └── user.js
+│
+├── routes/
+│   ├── listing.js
+│   ├── review.js
+│   └── user.js
+│
 ├── utils/
-│   ├── wrapAsync.js         # Async error wrapper for route handlers
-│   └── ExpressError.js      # Custom error class
+│   ├── ExpressError.js
+│   └── wrapAsync.js
+│
 ├── views/
-│   ├── listings/            # index, new, show, edit templates
-│   └── error.ejs            # Error page
-└── public/                  # Static assets (CSS, JS, images)
-```
+│   ├── listings/
+│   ├── users/
+│   ├── layouts/
+│   └── error.ejs
+│
+└── public/
+    ├── css/
+    └── js/
 
-## Routes
+🔑 Environment Variables
 
-| Method | Route                              | Description                  |
-|--------|-------------------------------------|-------------------------------|
-| GET    | `/listings`                         | View all listings             |
-| GET    | `/listings/new`                     | Form to create a new listing  |
-| POST   | `/listings`                         | Create a new listing          |
-| GET    | `/listings/:id`                     | View a single listing         |
-| GET    | `/listings/:id/edit`                | Form to edit a listing        |
-| PUT    | `/listings/:id`                     | Update a listing               |
-| DELETE | `/listings/:id`                     | Delete a listing               |
-| POST   | `/listings/:id/reviews`             | Add a review to a listing     |
-| DELETE | `/listings/:id/reviews/:reviewId`   | Delete a review                |
+Create a .env file in the project root.
 
-## Getting Started
+CLOUD_NAME=your_cloudinary_cloud_name
+CLOUD_API_KEY=your_cloudinary_api_key
+CLOUD_API_SECRET=your_cloudinary_api_secret
 
-### Prerequisites
+MAP_TOKEN=your_mapbox_token
 
-- Node.js installed
-- MongoDB running locally (`mongod`) on the default port `27017`
+ATLASDB_URL=your_mongodb_atlas_connection_string
 
-### Installation
+SECRET=your_session_secret
 
-```bash
+Important: Never commit .env to GitHub. Keep API keys, database credentials, and session secrets private.
+
+The application loads environment variables with dotenv, uses ATLASDB_URL for MongoDB, and uses SECRET for session storage.
+
+🚀 Installation
+
+1. Clone the repository
+
 git clone https://github.com/mrajay10/WanderLust.git
 cd WanderLust
+
+2. Install dependencies
+
 npm install
-```
 
-### Running the app
+3. Configure environment variables
 
-Make sure MongoDB is running locally, then start the server:
+Create .env and add the required credentials described above.
 
-```bash
+4. Start the application
+
 node app.js
-```
 
-The app will connect to the local database `wanderlust` and start listening on:
+For development with Nodemon:
 
-```
+nodemon app.js
+
+The server runs on:
+
 http://localhost:8080
-```
 
-You should see:
-```
-Connection Successful
-Server is listening to port 8080
-```
+🔐 Authentication & Authorization
 
-## Notes
+Passport is configured with a local authentication strategy. User sessions are serialized/deserialized through the User model.
 
-- Uses a wildcard catch-all route (`/*splat`) to handle 404s for undefined routes.
-- All async route handlers are wrapped with `wrapAsync` to forward errors to the centralized error handler instead of needing try/catch everywhere.
-- Listing and review validation errors return a `400` status with a combined error message via `ExpressError`.
+The application also contains middleware for:
 
-## License
+checking whether a user is logged in
 
-This project is for educational purposes as part of a personal MERN stack learning project.
+preserving the requested redirect URL
+
+checking listing ownership
+
+validating listing data
+
+validating review data
+
+checking review ownership
+
+☁️ Cloudinary
+
+Cloudinary is configured for listing image uploads.
+
+Uploaded images are stored in the:
+
+wanderlust_DEV
+
+folder, with PNG, JPG, and JPEG formats supported.
+
+🗺️ Mapbox
+
+Mapbox is used for map/location functionality. The Mapbox token should be supplied through the MAP_TOKEN environment variable rather than hard-coded into the project.
+
+🧪 Validation
+
+Joi schemas validate listing and review data before it reaches the database.
+
+Listing validation
+
+A listing requires:
+
+title
+
+description
+
+location
+
+country
+
+price
+
+The price must be a non-negative number.
+
+Review validation
+
+A review requires:
+
+rating from 1 to 5
+
+comment
+
+🛣️ Main Routes
+
+Listings
+
+Method
+
+Route
+
+Description
+
+GET
+
+/listings
+
+Display all listings
+
+GET
+
+/listings/new
+
+Show create-listing form
+
+POST
+
+/listings
+
+Create a listing
+
+GET
+
+/listings/:id
+
+Show one listing
+
+GET
+
+/listings/:id/edit
+
+Show edit form
+
+PUT/PATCH
+
+/listings/:id
+
+Update a listing
+
+DELETE
+
+/listings/:id
+
+Delete a listing
+
+Reviews
+
+Method
+
+Route
+
+Description
+
+POST
+
+/listings/:id/reviews
+
+Add a review
+
+DELETE
+
+/listings/:id/reviews/:reviewId
+
+Delete a review
+
+Users
+
+User routes are mounted at / and handle authentication-related operations such as registration and login/logout.
+
+🧱 Middleware
+
+The project uses custom middleware for application-level security and validation:
+
+isLoggedIn
+saveRedirectUrl
+isOwner
+validateListing
+validateReview
+isReviewAuthor
+
+These middleware functions protect listing/review operations and validate incoming data before controller logic executes.
+
+⚙️ Application Flow
+
+Browser
+   │
+   ▼
+Express.js
+   │
+   ├── Passport Authentication
+   ├── Session Management
+   ├── Joi Validation
+   ├── Route Middleware
+   │
+   ├───────────────┐
+   ▼               ▼
+MongoDB         Cloudinary
+   │               │
+   └───────┬───────┘
+           ▼
+         EJS
+           │
+           ▼
+        Browser
+
+🛡️ Error Handling
+
+The application uses a custom ExpressError class and centralized error middleware.
+
+Unknown routes are converted into a 404 - Page Not Found error, while other errors are rendered through the application's error page.
+
+📦 Important Dependencies
+
+express
+mongoose
+ejs
+ejs-mate
+passport
+passport-local
+passport-local-mongoose
+express-session
+connect-mongo
+connect-flash
+joi
+multer
+cloudinary
+multer-storage-cloudinary
+@mapbox/mapbox-sdk
+method-override
+dotenv
+
+📌 Notes
+
+MongoDB credentials should be stored only in environment variables.
+
+Cloudinary credentials should never be exposed publicly.
+
+Mapbox tokens should be managed through environment configuration.
+
+.env should remain excluded from Git using .gitignore.
+
+The application currently listens on port 8080.
+
+🌐 Live Project
+
+If the application is deployed, add the deployment URL here:
+
+Live Demo: https://wanderlust-lepl.onrender.com/listings
+
+📚 Learning Goals
+
+This project was created as a full-stack web-development learning project to practice:
+
+RESTful routing
+
+MVC architecture
+
+CRUD operations
+
+MongoDB and Mongoose
+
+Authentication and authorization
+
+Express middleware
+
+Server-side validation
+
+Image uploads
+
+Cloud storage
+
+Sessions and cookies
+
+EJS templating
+
+Map integration
+
+Error handling
+
+Deployment
+
+📄 License
+
+This project is intended for educational and learning purposes.
