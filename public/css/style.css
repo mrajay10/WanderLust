@@ -118,6 +118,19 @@ body {
     background-color: #fe424d !important;
     border: none !important;
 }
+.orgImage img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .orgImage img {
+        width: 100%;
+        height: 300px;
+    }
+}
 
 /* Show page */
 .show-img {
