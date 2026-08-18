@@ -12,9 +12,14 @@ body {
          /* Navbar */
 
 .navbar {
-    height: 5rem;
+    min-height: 5rem;
+    height: auto;
     background-color: white;
     
+}
+
+.navbar-collapse {
+    position: static;
 }
 
 .fa-compass {
