@@ -52,9 +52,10 @@ body {
     align-items: center;
 }
 
-.f-info-socials i {
+.f-info-socials a {
     margin-right: 1rem;
     font-size: 1.2rem;
+    text-decoration: none;
 }
 
 
